@@ -16,11 +16,11 @@ function appendPostToBody(posts) {
   posts
     .filter((post, index) => index < 15)
     .forEach(post => {
-      $("body").append(getPostsAndAppendToBody(post));
+      $("body").append(getPostHtml(post));
     });
 }
 
-function getPostsAndAppendToBody(postData) {
+function getPostHtml(postData) {
   return `
     	<div>
       	<p>Post id: ${postData.id}</p>
