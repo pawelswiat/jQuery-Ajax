@@ -30,5 +30,6 @@ function getPostHtml(postData) {
 				<label for="body">Post body: </label>
         	<textarea name="body">${postData.body}</textarea>
       </div>
+      <hr>
     `;
 }
