@@ -1,6 +1,29 @@
 // Import stylesheets
 import "./style.css";
 
+$("#createPost").submit(() => addNewPost(event)) 
+
+function addNewPost(event) {
+	event.preventDefault();
+  let setPostTitle = $("#post-title-input").val();
+  let setPostBody = $("#post-body-input").val(); 
+	
+ 	$.ajax({
+  		url: 'https://jsonplaceholder.typicode.com/posts',
+	    method: 'POST',
+    	data: {
+      	userId: "999",
+        title: setPostTitle,
+        body: setPostBody
+      },
+      success: (post) => {
+      	appendPostToBody(post);
+        alert('Post został dodany')
+      }
+	  })
+}
+
+
 $("#btn-get-posts").click(() => getPosts());
 
 function getPosts() {
@@ -8,11 +31,15 @@ function getPosts() {
     method: "GET",
     url: "https://jsonplaceholder.typicode.com/posts/",
     dataType: "json",
-    success: posts => appendPostToBody(posts)
+    success: posts => appendPostsToBody(posts)
   });
 }
 
-function appendPostToBody(posts) {
+function appendPostToBody(post) {
+	$("body").append(getPostHtml(post));
+}
+
+function appendPostsToBody(posts) {
   posts
     .filter((post, index) => index < 15)
     .forEach(post => {
