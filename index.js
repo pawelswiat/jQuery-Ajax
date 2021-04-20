@@ -18,7 +18,7 @@ function getPostComments($button) {
 
   $.ajax({
     method: "GET",
-    url: `https://jsonplaceholder.typicode.com/posts/` + postId + "/comments",
+    url: `https://jsonplaceholder.typicode.com/posts/` + postId + `/comments`,
     dataType: "JSON",
     success: comment => appendCommentsToPostCommentsDiv(comment, $button)
   });
