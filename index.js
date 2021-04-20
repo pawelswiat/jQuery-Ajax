@@ -18,7 +18,7 @@ function getPostComments($button) {
 
   $.ajax({
     method: "GET",
-    url: "https://jsonplaceholder.typicode.com/posts/" + postId + "/comments",
+    url: `https://jsonplaceholder.typicode.com/posts/` + postId + "/comments",
     dataType: "JSON",
     success: comment => appendCommentsToPostCommentsDiv(comment, $button)
   });
@@ -51,7 +51,7 @@ function editPost($button) {
 
   $.ajax({
     method: "PUT",
-    url: "https://jsonplaceholder.typicode.com/posts/" + postId,
+    url: `https://jsonplaceholder.typicode.com/posts/` + postId,
     data: {
       title: newTitleValue,
       body: newBodyValue
@@ -65,7 +65,7 @@ function deletePost($button) {
 
   $.ajax({
     method: "DELETE",
-    url: "https://jsonplaceholder.typicode.com/posts/" + postId,
+    url: `https://jsonplaceholder.typicode.com/posts/` + postId,
     dataType: "json",
     success: () => removePostFromView(postId)
   });
