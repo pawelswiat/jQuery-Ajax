@@ -24,8 +24,8 @@ function getPostComments($button) {
   });
 }
 
-function appendCommentsToPostCommentsDiv(comment) {
-  comment.forEach(comment =>
+function appendCommentsToPostCommentsDiv(comments, $button) {
+  comments.forEach(comment =>
     $("div[data-post_id=" + comment.postId + "]")
       .find(".post-comments")
       .append(getCommentHtml(comment))
