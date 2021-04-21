@@ -14,11 +14,11 @@ $("div.posts").on("click", ".get-post-comments-btn", function() {
 
 function getPostComments($button) {
   let postId = $button.parent().attr("data-post_id");
-  let urlSuffix = `${postId}/comments`;
+  let path = `/posts/${postId}/comments`;
 
   ajaxGet(function(data) {
-    appendCommentsToPostCommentsDiv(data, $button);
-  }, urlSuffix);
+    appendCommentsToPostCommentsDiv(data, postId, $button);
+  }, path);
 }
 
 function appendCommentsToPostCommentsDiv(comments, $button) {
@@ -43,33 +43,39 @@ function getCommentHtml(comment) {
 
 function editPost($button) {
   let postId = $button.parent().attr("data-post_id");
-  console.log(postId);
+  let path = `/posts/${postId}`;
   let data = {
     title: $button.siblings("input").val(),
     body: $button.siblings("textarea").val()
   };
-  ajaxUpdate(postId, data);
+  ajaxUpdate(data, path);
 }
 
 function deletePost($button) {
   let postId = $button.parent().attr("data-post_id");
+  let path = `/posts/${postId}`;
 
-  ajaxDelete(postId, removePostFromView);
+  ajaxDelete(function() {
+    removePostFromView(postId);
+  }, path);
 }
 
 function removePostFromView(postId) {
+  console.log(postId);
   $("div[data-post_id=" + postId + "]").remove();
 }
 
 function addNewPost(event) {
   event.preventDefault();
+
+  let path = "/posts";
   let data = {
     userId: "999",
     title: $("#new-post-title-input").val(),
     body: $("#new-post-body-textarea").val()
   };
 
-  ajaxPost(data, appendPostToPostsDiv);
+  ajaxPost(data, appendPostToPostsDiv, path);
 }
 
 function appendPostToPostsDiv(post) {
@@ -77,7 +83,8 @@ function appendPostToPostsDiv(post) {
 }
 
 function getPosts() {
-  ajaxGet(appendPostsToPostsDiv, "");
+  let path = "/posts";
+  ajaxGet(appendPostsToPostsDiv, path);
 }
 
 function appendPostsToPostsDiv(posts) {
@@ -104,37 +111,38 @@ function getEachPostHtml(post) {
  `;
 }
 
-function ajaxUpdate(postId, data) {
-  console.log(postId, data);
+function ajaxUpdate(data, path) {
   $.ajax({
     method: "PUT",
-    url: `https://jsonplaceholder.typicode.com/posts/${postId}`,
+    url: `https://jsonplaceholder.typicode.com` + path,
     data: data,
-    success: alert("Post id: " + postId + " został edytowany")
+    success: response => {
+      return alert("Post o id: " + response.id + " został edytowany");
+    }
   });
 }
 
-function ajaxDelete(postId, onSuccess) {
+function ajaxDelete(onSuccess, path) {
   $.ajax({
     method: "DELETE",
-    url: `https://jsonplaceholder.typicode.com/posts/${postId}`,
-    success: () => onSuccess(postId)
+    url: `https://jsonplaceholder.typicode.com` + path,
+    success: () => onSuccess()
   });
 }
 
-function ajaxPost(data, onSuccess) {
+function ajaxPost(data, onSuccess, path) {
   $.ajax({
     method: "POST",
-    url: "https://jsonplaceholder.typicode.com/posts/",
+    url: "https://jsonplaceholder.typicode.com" + path,
     data: data,
     success: post => onSuccess(post)
   });
 }
 
-function ajaxGet(onSuccess, urlSuffix) {
+function ajaxGet(onSuccess, path) {
   $.ajax({
     method: "GET",
-    url: `https://jsonplaceholder.typicode.com/posts/${urlSuffix}`,
+    url: `https://jsonplaceholder.typicode.com` + path,
     dataType: "JSON",
     success: data => onSuccess(data)
   });
