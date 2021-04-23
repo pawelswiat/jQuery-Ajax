@@ -12,16 +12,14 @@ $("div.posts").on("click", ".get-post-comments-btn", function() {
   getPostComments($(this));
 });
 
-
-
 function getPostComments($button) {
   let postId = $button.parent().attr("data-post_id");
   let path = `/posts/${postId}/comments`;
-	
-	ajaxGet(function(data) {
-  	appendCommentsToPostCommentsDiv(data, postId, $button);
+
+  ajaxGet(function(data) {
+    appendCommentsToPostCommentsDiv(data, postId, $button);
   }, path);
-} 
+}
 
 function appendCommentsToPostCommentsDiv(comments, $button) {
   comments.forEach(comment =>
@@ -45,41 +43,39 @@ function getCommentHtml(comment) {
 
 function editPost($button) {
   let postId = $button.parent().attr("data-post_id");
-  console.log(postId)
+  let path = `/posts/${postId}`;
   let data = {
     title: $button.siblings("input").val(),
-  	body: $button.siblings("textarea").val()
-	}
-  ajaxUpdate(postId, data);
+    body: $button.siblings("textarea").val()
+  };
+  ajaxUpdate(path, data);
 }
 
 function deletePost($button) {
   let postId = $button.parent().attr("data-post_id");
-  let path = `/posts/${postId}`
+  let path = `/posts/${postId}`;
 
-	ajaxDelete(function() {
-  	removePostFromView(postId)
-  }, path); 
-  
+  ajaxDelete(function() {
+    removePostFromView(postId);
+  }, path);
 }
 
 function removePostFromView(postId) {
-	console.log(postId);
+  console.log(postId);
   $("div[data-post_id=" + postId + "]").remove();
 }
 
 function addNewPost(event) {
-  event.preventDefault();  
-  
+  event.preventDefault();
+
   let path = "/posts";
   let data = {
-  	userId: "999",
-  	title: $("#new-post-title-input").val(),
-  	body: $("#new-post-body-textarea").val()
-  }
-  
-  ajaxPost(data, appendPostToPostsDiv, path)
-  
+    userId: "999",
+    title: $("#new-post-title-input").val(),
+    body: $("#new-post-body-textarea").val()
+  };
+
+  ajaxPost(data, appendPostToPostsDiv, path);
 }
 
 function appendPostToPostsDiv(post) {
@@ -87,9 +83,8 @@ function appendPostToPostsDiv(post) {
 }
 
 function getPosts() {
-
-	let path = "/posts";
-	ajaxGet(appendPostsToPostsDiv, path);  
+  let path = "/posts";
+  ajaxGet(appendPostsToPostsDiv, path);
 }
 
 function appendPostsToPostsDiv(posts) {
@@ -116,38 +111,47 @@ function getEachPostHtml(post) {
  `;
 }
 
-function ajaxUpdate(postId, data) {
-	console.log(postId, data)
-	$.ajax({
+function ajaxUpdate(path, data) {
+  $.ajax({
     method: "PUT",
-    url: `https://jsonplaceholder.typicode.com/posts/${postId}`,
+    url: `https://6082afec5dbd2c001757a40f.mockapi.io/` + path,
     data: data,
-    success: alert("Post id: " + postId + " został edytowany")
+    success: response => {
+      alert("Post o id: " + response.id + " został edytowany");
+    },
+    error: handleError
   });
 }
 
 function ajaxDelete(onSuccess, path) {
-	$.ajax({
+  $.ajax({
     method: "DELETE",
-    url: `https://jsonplaceholder.typicode.com` + path,
-    success: () => onSuccess()
+    url: `https://6082afec5dbd2c001757a40f.mockapi.io` + path,
+    success: () => onSuccess(),
+    error: handleError
   });
 }
 
 function ajaxPost(data, onSuccess, path) {
-	$.ajax({
+  $.ajax({
     method: "POST",
-    url: "https://jsonplaceholder.typicode.com" + path,
+    url: "https://6082afec5dbd2c001757a40f.mockapi.io" + path,
     data: data,
-    success: post => onSuccess(post)
+    success: post => onSuccess(post),
+    error: handleError
   });
 }
 
 function ajaxGet(onSuccess, path) {
-	$.ajax({
+  $.ajax({
     method: "GET",
-    url: `https://jsonplaceholder.typicode.com` + path,
+    url: `https://6082afec5dbd2c001757a40f.mockapi.io` + path,
     dataType: "JSON",
-    success: data => onSuccess(data)
+    success: data => onSuccess(data),
+    error: handleError
   });
+}
+
+function handleError(error) {
+  alert("Wystąpił błąd");
 }
