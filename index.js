@@ -43,7 +43,6 @@ function getCommentHtml(comment) {
 
 function editPost($button) {
   let postId = $button.parent().attr("data-post_id");
-  console.log(postId);
   let data = {
     title: $button.siblings("input").val(),
     body: $button.siblings("textarea").val()
@@ -61,7 +60,6 @@ function deletePost($button) {
 }
 
 function removePostFromView(postId) {
-  console.log(postId);
   $("div[data-post_id=" + postId + "]").remove();
 }
 
@@ -88,7 +86,6 @@ function getPosts() {
 }
 
 function appendPostsToPostsDiv(posts) {
-  console.log("ok");
   posts
     //.filter((post, index) => index < 2)
     .forEach(post => $("div.posts").append(getEachPostHtml(post)));
@@ -113,10 +110,9 @@ function getEachPostHtml(post) {
 }
 
 function ajaxUpdate(postId, data) {
-  console.log(postId, data);
   $.ajax({
     method: "PUT",
-    url: `https://6082afec5dbd2c001757a40f.mockapi.io/posts/${postId}`,
+    url: `https://jsonplaceholder.typicode.com/posts/${postId}`,
     data: data,
     success: alert("Post id: " + postId + " został edytowany"),
     error: handleError
@@ -126,7 +122,7 @@ function ajaxUpdate(postId, data) {
 function ajaxDelete(onSuccess, path) {
   $.ajax({
     method: "DELETE",
-    url: `https://6082afec5dbd2c001757a40f.mockapi.io/` + path,
+    url: `https://jsonplaceholder.typicode.com` + path,
     success: () => onSuccess(),
     error: handleError
   });
@@ -135,7 +131,7 @@ function ajaxDelete(onSuccess, path) {
 function ajaxPost(data, onSuccess, path) {
   $.ajax({
     method: "POST",
-    url: "https://6082afec5dbd2c001757a40f.mockapi.io/" + path,
+    url: "https://jsonplaceholder.typicode.com" + path,
     data: data,
     success: post => onSuccess(post),
     error: handleError
@@ -145,7 +141,7 @@ function ajaxPost(data, onSuccess, path) {
 function ajaxGet(onSuccess, path) {
   $.ajax({
     method: "GET",
-    url: `https://6082afec5dbd2c001757a40f.mockapi.io/` + path,
+    url: `https://jsonplaceholder.typicode.com` + path,
     dataType: "JSON",
     success: data => onSuccess(data),
     error: handleError
@@ -153,5 +149,5 @@ function ajaxGet(onSuccess, path) {
 }
 
 function handleError(error) {
-  alert("Wystąpił błąd!");
+  alert("Wystąpił błąd");
 }
