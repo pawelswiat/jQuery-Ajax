@@ -118,7 +118,8 @@ function ajaxUpdate(path, data) {
     data: data,
     success: response => {
       alert("Post o id: " + response.id + " został edytowany");
-    }
+    },
+    error: handleError
   });
 }
 
@@ -126,7 +127,8 @@ function ajaxDelete(onSuccess, path) {
   $.ajax({
     method: "DELETE",
     url: `https://6082afec5dbd2c001757a40f.mockapi.io` + path,
-    success: () => onSuccess()
+    success: () => onSuccess(),
+    error: handleError
   });
 }
 
@@ -135,7 +137,8 @@ function ajaxPost(data, onSuccess, path) {
     method: "POST",
     url: "https://6082afec5dbd2c001757a40f.mockapi.io" + path,
     data: data,
-    success: post => onSuccess(post)
+    success: post => onSuccess(post),
+    error: handleError
   });
 }
 
@@ -144,6 +147,11 @@ function ajaxGet(onSuccess, path) {
     method: "GET",
     url: `https://6082afec5dbd2c001757a40f.mockapi.io` + path,
     dataType: "JSON",
-    success: data => onSuccess(data)
+    success: data => onSuccess(data),
+    error: handleError
   });
+}
+
+function handleError(error) {
+  alert("Wystąpił błąd");
 }
