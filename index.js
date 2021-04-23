@@ -43,12 +43,12 @@ function getCommentHtml(comment) {
 
 function editPost($button) {
   let postId = $button.parent().attr("data-post_id");
-  let path = `/posts/${postId}`;
+  console.log(postId);
   let data = {
     title: $button.siblings("input").val(),
     body: $button.siblings("textarea").val()
   };
-  ajaxUpdate(data, path);
+  ajaxUpdate(postId, data);
 }
 
 function deletePost($button) {
@@ -88,6 +88,7 @@ function getPosts() {
 }
 
 function appendPostsToPostsDiv(posts) {
+  console.log("ok");
   posts
     //.filter((post, index) => index < 2)
     .forEach(post => $("div.posts").append(getEachPostHtml(post)));
@@ -111,39 +112,46 @@ function getEachPostHtml(post) {
  `;
 }
 
-function ajaxUpdate(data, path) {
+function ajaxUpdate(postId, data) {
+  console.log(postId, data);
   $.ajax({
     method: "PUT",
-    url: `https://jsonplaceholder.typicode.com` + path,
+    url: `https://6082afec5dbd2c001757a40f.mockapi.io/posts/${postId}`,
     data: data,
-    success: response => {
-      return alert("Post o id: " + response.id + " został edytowany");
-    }
+    success: alert("Post id: " + postId + " został edytowany"),
+    error: handleError
   });
 }
 
 function ajaxDelete(onSuccess, path) {
   $.ajax({
     method: "DELETE",
-    url: `https://jsonplaceholder.typicode.com` + path,
-    success: () => onSuccess()
+    url: `https://6082afec5dbd2c001757a40f.mockapi.io/` + path,
+    success: () => onSuccess(),
+    error: handleError
   });
 }
 
 function ajaxPost(data, onSuccess, path) {
   $.ajax({
     method: "POST",
-    url: "https://jsonplaceholder.typicode.com" + path,
+    url: "https://6082afec5dbd2c001757a40f.mockapi.io/" + path,
     data: data,
-    success: post => onSuccess(post)
+    success: post => onSuccess(post),
+    error: handleError
   });
 }
 
 function ajaxGet(onSuccess, path) {
   $.ajax({
     method: "GET",
-    url: `https://jsonplaceholder.typicode.com` + path,
+    url: `https://6082afec5dbd2c001757a40f.mockapi.io/` + path,
     dataType: "JSON",
-    success: data => onSuccess(data)
+    success: data => onSuccess(data),
+    error: handleError
   });
+}
+
+function handleError(error) {
+  alert("Wystąpił błąd!");
 }
