@@ -1,7 +1,7 @@
 // Import stylesheets
 
 $("#get-posts-btn").on("click", () => getPosts());
-$("#add-new-post").on("submit", () => addNewPost(event));
+$("#add-new-post").on("submit", (event) => addNewPost(event));
 $("div.posts").on("click", ".delete-post-btn", function() {
   deletePost($(this));
 });
@@ -12,16 +12,17 @@ $("div.posts").on("click", ".get-post-comments-btn", function() {
   getPostComments($(this));
 });
 
+
 function getPostComments($button) {
   let postId = $button.parent().attr("data-post_id");
   let path = `/posts/${postId}/comments`;
 
-  ajaxGet(function(data) {
-    appendCommentsToPostCommentsDiv(data, postId, $button);
-  }, path);
+  ajaxGet(path, (data) => {
+    appendCommentsToView(data);
+  });
 }
 
-function appendCommentsToPostCommentsDiv(comments, $button) {
+function appendCommentsToView(comments) {
   comments.forEach(comment =>
     $("div[data-post_id=" + comment.postId + "]")
       .find(".post-comments")
@@ -48,20 +49,18 @@ function editPost($button) {
     title: $button.siblings("input").val(),
     body: $button.siblings("textarea").val()
   };
-  ajaxUpdate(path, data);
+  updatePost(path, data);
 }
 
 function deletePost($button) {
   let postId = $button.parent().attr("data-post_id");
   let path = `/posts/${postId}`;
 
-  ajaxDelete(function() {
-    removePostFromView(postId);
-  }, path);
+  ajaxDelete(path, () => {removePostFromView(postId)});
+  
 }
 
 function removePostFromView(postId) {
-  console.log(postId);
   $("div[data-post_id=" + postId + "]").remove();
 }
 
@@ -74,26 +73,20 @@ function addNewPost(event) {
     title: $("#new-post-title-input").val(),
     body: $("#new-post-body-textarea").val()
   };
-
-  ajaxPost(data, appendPostToPostsDiv, path);
+  ajaxPost(path, data, (data) => appendPostToPostsDiv(data));
 }
 
 function appendPostToPostsDiv(post) {
-  $("div.posts").append(getEachPostHtml(post));
-}
-
-function getPosts() {
-  let path = "/posts";
-  ajaxGet(appendPostsToPostsDiv, path);
+  $("div.posts").append(getPostHtml(post));
 }
 
 function appendPostsToPostsDiv(posts) {
   posts
     //.filter((post, index) => index < 2)
-    .forEach(post => $("div.posts").append(getEachPostHtml(post)));
+    .forEach(post => appendPostToPostsDiv(post));
 }
 
-function getEachPostHtml(post) {
+function getPostHtml(post) {
   return `
   	<div data-post_id="${post.id}">
     	<p>Post id: ${post.id}</p>
@@ -111,47 +104,46 @@ function getEachPostHtml(post) {
  `;
 }
 
-function ajaxUpdate(path, data) {
-  $.ajax({
-    method: "PUT",
-    url: `https://6082afec5dbd2c001757a40f.mockapi.io/` + path,
-    data: data,
-    success: response => {
-      alert("Post o id: " + response.id + " został edytowany");
-    },
-    error: handleError
+function updatePost(path, data) {
+  ajaxPut(path, data, (response) => {
+    alert("Post id: " + response.id + " został edytowany");
+  })
+}
+
+function getPosts() {
+  ajaxGet('/posts', (data) => appendPostsToPostsDiv(data));
+}
+
+function ajaxPut(path, data, onSuccess) {
+  ajax('PUT', path, onSuccess, { data: data });
+}
+
+function ajaxDelete(path, onSuccess) {
+  ajax('DELETE', path, onSuccess);
+}
+
+function ajaxPost(path, data, onSuccess) {
+  ajax('POST', path, onSuccess, {
+    data: data
+  });
+} 
+
+function ajaxGet(path, onSuccess) {
+  ajax('GET', path, onSuccess, {
+    dataType: "JSON"
   });
 }
 
-function ajaxDelete(onSuccess, path) {
+function ajax(method, path, onSuccess, extraSettings = {}) {
   $.ajax({
-    method: "DELETE",
+    method: method,
     url: `https://6082afec5dbd2c001757a40f.mockapi.io` + path,
-    success: () => onSuccess(),
-    error: handleError
-  });
-}
-
-function ajaxPost(data, onSuccess, path) {
-  $.ajax({
-    method: "POST",
-    url: "https://6082afec5dbd2c001757a40f.mockapi.io" + path,
-    data: data,
-    success: post => onSuccess(post),
-    error: handleError
-  });
-}
-
-function ajaxGet(onSuccess, path) {
-  $.ajax({
-    method: "GET",
-    url: `https://6082afec5dbd2c001757a40f.mockapi.io` + path,
-    dataType: "JSON",
-    success: data => onSuccess(data),
-    error: handleError
+    success: (data) => onSuccess(data),
+    ...extraSettings,
+    error: (error) => handleError(error)
   });
 }
 
 function handleError(error) {
   alert("Wystąpił błąd");
-}
+} 
